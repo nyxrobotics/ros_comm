@@ -8,6 +8,15 @@ endif()
 find_package(catkin REQUIRED COMPONENTS rosbag_storage rosconsole roscpp std_srvs topic_tools xmlrpcpp)
 find_package(Boost REQUIRED COMPONENTS date_time regex program_options filesystem)
 find_package(BZip2 REQUIRED)
+find_package(OpenMP REQUIRED)
+if(OPENMP_FOUND)
+  message(STATUS "OPENMP FOUND")
+  set(OpenMP_FLAGS ${OpenMP_CXX_FLAGS})  # or if you use C: ${OpenMP_C_FLAGS}
+  set(OpenMP_LIBS gomp)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
 
 catkin_python_setup()
 
@@ -28,8 +37,11 @@ add_library(rosbag
   src/recorder.cpp
   src/time_translator.cpp)
 
-target_link_libraries(rosbag ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(rosbag
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
   ${BZIP2_LIBRARIES}
+  ${OpenMP_LIBS}
 )
 
 add_executable(record src/record.cpp)
