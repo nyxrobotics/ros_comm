@@ -311,6 +311,8 @@ void Player::publish() {
 
         paused_time_ = now_wt;
 
+        // Update subscribers.
+        ros::spinOnce();
         // Call do-publish for each message
         for (const MessageInstance& m : view) {
             if (!node_handle_.ok())
@@ -318,6 +320,8 @@ void Player::publish() {
 
             doPublish(m);
         }
+        printTime();
+        time_publisher_.runClock(ros::WallDuration(.1));
 
         if (options_.keep_alive)
             while (node_handle_.ok())
@@ -488,7 +492,7 @@ void Player::doPublish(MessageInstance const& m) {
     ROS_ASSERT(pub_iter != publishers_.end());
 
     // Update subscribers.
-    ros::spinOnce();
+    // ros::spinOnce();
 
     // If immediate specified, play immediately
     if (options_.at_once) {
@@ -603,9 +607,9 @@ void Player::doPublish(MessageInstance const& m) {
             }
         }
 
-        printTime();
-        time_publisher_.runClock(ros::WallDuration(.1));
-        ros::spinOnce();
+        // printTime();
+        // time_publisher_.runClock(ros::WallDuration(.1));
+        // ros::spinOnce();
     }
 
     pub_iter->second.publish(m);
