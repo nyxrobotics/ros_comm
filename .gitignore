@@ -1,2 +1,10 @@
 *~
 *.pyc
+
+.vscode/
+
+tools/rosbag/.cache/
+
+tools/rosbag/build/
+
+
